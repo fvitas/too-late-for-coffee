@@ -44,7 +44,7 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
       <button
         type="button"
         aria-expanded={open}
-        className="relative z-20 cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright focus-visible:outline-none sm:text-xl"
+        className="relative z-20 cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright sm:text-xl"
         onClick={() => setOpen(!open)}
       >
         SETTINGS
@@ -73,7 +73,7 @@ function Stepper({ label, symbol, onClick }: StepperProps) {
     <button
       type="button"
       aria-label={label}
-      className="size-10 shrink-0 cursor-pointer rounded-full border border-faint text-soft transition-colors hover:border-bright hover:text-bright focus-visible:border-bright focus-visible:outline-none sm:size-8"
+      className="size-10 shrink-0 cursor-pointer rounded-full border border-faint text-soft transition-colors hover:border-bright hover:text-bright focus-visible:border-bright sm:size-8"
       onClick={onClick}
     >
       {symbol}

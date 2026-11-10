@@ -128,7 +128,6 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setMenuCupId(null)
       if (event.key !== 'Backspace' && event.key !== 'Delete') return
       const selected = cups.find((cup) => cup.id === selectedId)
       if (!selected) return
@@ -168,6 +167,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     if (cups.length === 1) return
     setCups((current) => current.filter((other) => other.id !== cup.id))
     if (selectedId === cup.id) setSelectedId(null)
+    setMenuCupId((current) => (current === cup.id ? null : current))
   }
 
   function handleCanvasPointerMove(event: React.PointerEvent<HTMLCanvasElement>) {
@@ -218,9 +218,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
 
   function handleLimitPointerMove(event: React.PointerEvent<HTMLSpanElement>) {
     if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
-    // Keep the line inside the chart, so it never leaves the visible area.
-    const highest = Math.min(LIMIT_MAX_MG, Math.floor(yToMg(VIEW_Y, domain)))
-    const limitMg = Math.min(highest, Math.max(LIMIT_MIN_MG, Math.round(yToMg(toPoint(event).y, domain))))
+    const limitMg = Math.min(LIMIT_MAX_MG, Math.max(LIMIT_MIN_MG, Math.round(yToMg(toPoint(event).y, domain))))
     setSettings((current) => ({ ...current, limitMg }))
   }
 

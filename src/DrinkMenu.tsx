@@ -17,7 +17,7 @@ export function DrinkMenu({ cup, onPick }: DrinkMenuProps) {
             type="button"
             role="menuitemradio"
             aria-checked={active}
-            className={`flex min-h-10 cursor-pointer items-center gap-2 px-3 whitespace-nowrap transition-colors focus-visible:outline-none sm:min-h-8 ${active ? 'text-accent' : 'text-muted hover:text-bright focus-visible:text-bright'}`}
+            className={`flex min-h-10 cursor-pointer items-center gap-2 px-3 whitespace-nowrap transition-colors sm:min-h-8 ${active ? 'text-accent' : 'text-muted hover:text-bright focus-visible:text-bright'}`}
             onClick={() => onPick(drink.mg)}
           >
             <Icon icon={drink.icon} className="size-5" />

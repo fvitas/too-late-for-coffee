@@ -51,7 +51,7 @@ export function App() {
             <button
               type="button"
               aria-label={light ? 'Switch to dark theme' : 'Switch to light theme'}
-              className="flex cursor-pointer py-2 text-muted transition-colors hover:text-bright focus-visible:text-bright focus-visible:outline-none"
+              className="flex cursor-pointer py-2 text-muted transition-colors hover:text-bright focus-visible:text-bright"
               onClick={toggleTheme}
             >
               <Icon icon={light ? 'moon' : 'sun'} className="size-5 sm:size-6" />

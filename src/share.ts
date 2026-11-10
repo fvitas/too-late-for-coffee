@@ -2,6 +2,7 @@ import {
   type Cup,
   type Settings,
   BED_RANGE_MINUTES,
+  CUSTOM_RANGE_MG,
   DAY_MINUTES,
   DAY_START_HOUR,
   DEFAULT_SETTINGS,
@@ -21,6 +22,8 @@ const MAX_QUERY_LENGTH = 512
 const CUP_PATTERN = /^(\d{4})-(\d{1,3})$/
 const CLOCK_PATTERN = /^([01]\d|2[0-3])([0-5]\d)$/
 const NUMBER_PATTERN = /^\d{1,4}$/
+// A cup holds either a custom amount or the default dose.
+const CUP_RANGE_MG: [number, number] = [CUSTOM_RANGE_MG[0], DOSE_RANGE_MG[1]]
 
 export function toShareQuery(cups: Cup[], settings: Settings): string {
   const parts = [`cups=${cups.map((cup) => `${toClock(cup.minute)}-${cup.mg}`).join(',')}`]
@@ -54,7 +57,7 @@ function parseCups(value: string | null): Cup[] | null {
   for (const token of tokens) {
     const match = CUP_PATTERN.exec(token)
     const minute = match ? parseClock(match[1]) : null
-    const mg = match ? parseNumber(match[2], DOSE_RANGE_MG) : null
+    const mg = match ? parseNumber(match[2], CUP_RANGE_MG) : null
     if (minute === null || mg === null) return null
     cups.push({ id: cups.length + 1, minute, mg })
   }

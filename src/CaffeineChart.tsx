@@ -133,6 +133,8 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key !== 'Backspace' && event.key !== 'Delete') return
+      // Backspace in a text field edits the text, so it must not remove the cup.
+      if (event.target instanceof HTMLInputElement) return
       const selected = cups.find((cup) => cup.id === selectedId)
       if (!selected) return
       event.preventDefault()
@@ -166,8 +168,12 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     setMenuCupId(menuCupId === cup.id ? null : cup.id)
   }
 
-  function pickDrink(cup: Cup, mg: number) {
+  function setCupMg(cup: Cup, mg: number) {
     setCups((current) => current.map((other) => (other.id === cup.id ? { ...other, mg } : other)))
+  }
+
+  function pickDrink(cup: Cup, mg: number) {
+    setCupMg(cup, mg)
     setMenuCupId(null)
   }
 
@@ -346,7 +352,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
               className="absolute bottom-full z-20 mb-1 -translate-x-1/2"
               style={{ left: clampCenter(toPx(minuteToX(menuCup.minute)), MENU_HALF_EM * fontPx) }}
             >
-              <DrinkMenu cup={menuCup} onPick={(mg) => pickDrink(menuCup, mg)} />
+              <DrinkMenu cup={menuCup} onPick={(mg) => pickDrink(menuCup, mg)} onCustom={(mg) => setCupMg(menuCup, mg)} />
             </div>
           </>
         )}

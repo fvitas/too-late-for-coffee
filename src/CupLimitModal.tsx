@@ -24,10 +24,10 @@ export function CupLimitModal({ onClose }: CupLimitModalProps) {
     >
       <div className="flex flex-col gap-3 p-6">
         <h2 id="cup-limit-title" className="text-xl text-bright">
-          {MAX_CUPS} CUPS. WE CUT YOU OFF.
+          {MAX_CUPS} CUPS. YOU CAN NOW HEAR COLORS.
         </h2>
         <p id="cup-limit-text" className="text-muted">
-          YOUR HEART CALLED. IT WOULD LIKE TO SLEEP AGAIN SOMEDAY. REMOVE A CUP TO ADD ANOTHER.
+          THE BLUE ONES ARE COUNTING SHEEP OUT LOUD. GO TO SLEEP.
         </p>
         <button type="button" className="mt-2 cursor-pointer self-end py-2 text-accent transition-colors hover:text-bright" onClick={onClose}>
           OK, DECAF IT IS

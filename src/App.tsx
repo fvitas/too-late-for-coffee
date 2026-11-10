@@ -32,10 +32,22 @@ export function App() {
   ]
 
   // The build turns light-dark() into variables set by the scheme-* classes, so the toggle swaps classes, not style.
-  function toggleTheme() {
+  function applyTheme() {
     document.documentElement.classList.remove('scheme-light-dark', 'scheme-light', 'scheme-dark')
     document.documentElement.classList.add(light ? 'scheme-dark' : 'scheme-light')
     setChosenLight(!light)
+  }
+
+  // A cross-fade hides the swap. The timeout lets Preact render and redraw the canvas before the new snapshot.
+  function toggleTheme() {
+    if (!document.startViewTransition) {
+      applyTheme()
+      return
+    }
+    document.startViewTransition(() => {
+      applyTheme()
+      return new Promise((resolve) => setTimeout(resolve))
+    })
   }
 
   return (

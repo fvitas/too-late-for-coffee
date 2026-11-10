@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks'
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks'
 import { type Cup, type Settings, BED_RANGE_MINUTES, DEFAULT_SETTINGS, LIMIT_MIN_MG, MAX_CUPS, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
 import { Backdrop } from './Backdrop'
 import { CupLimitModal } from './CupLimitModal'
@@ -117,7 +117,8 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     return () => observer.disconnect()
   }, [])
 
-  useEffect(() => {
+  // A layout effect redraws before the browser paints, so the canvas never lags behind the DOM colours.
+  useLayoutEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx || width === 0) return

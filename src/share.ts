@@ -23,7 +23,7 @@ const CUP_PATTERN = /^(\d{4})-(\d{1,3})$/
 const CLOCK_PATTERN = /^([01]\d|2[0-3])([0-5]\d)$/
 const NUMBER_PATTERN = /^\d{1,4}$/
 // A cup holds either a custom amount or the default dose.
-const CUP_RANGE_MG: [number, number] = [CUSTOM_RANGE_MG[0], DOSE_RANGE_MG[1]]
+const CUP_RANGE_MG: [number, number] = [CUSTOM_RANGE_MG[0], Math.max(CUSTOM_RANGE_MG[1], DOSE_RANGE_MG[1])]
 
 export function toShareQuery(cups: Cup[], settings: Settings): string {
   const parts = [`cups=${cups.map((cup) => `${toClock(cup.minute)}-${cup.mg}`).join(',')}`]

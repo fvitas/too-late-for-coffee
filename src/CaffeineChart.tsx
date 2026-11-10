@@ -17,6 +17,7 @@ import {
   chartDomain,
   chartTopMg,
   cupNear,
+  cupToRemove,
   drawChart,
   handleRadius,
   hitRadius,
@@ -24,7 +25,6 @@ import {
   isInsideChart,
   mgToY,
   minuteToX,
-  toggleRadius,
   xToMinute,
   yToMg,
 } from './draw'
@@ -192,7 +192,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
   function handleCanvasClick(event: React.MouseEvent<HTMLCanvasElement>) {
     const point = toPoint(event)
     if (!isInsideChart(point)) return
-    const near = cupNear(cups, point.x, toggleRadius(pxPerUnit))
+    const near = cupToRemove(chartState, point.x)
     if (near) removeCup(near)
     else addCup(point.x)
   }

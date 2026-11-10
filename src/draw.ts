@@ -154,10 +154,22 @@ export function cupNear(cups: Cup[], x: number, radius: number): Cup | undefined
   return near.sort((a, b) => distance(a) - distance(b))[0]
 }
 
+// A click on the rise of the selected cup also removes it, up to the peak of that cup alone or the next cup.
+export function cupToRemove(state: ChartState, x: number): Cup | undefined {
+  const { cups, settings } = state
+  const near = cupNear(cups, x, toggleRadius(state.pxPerUnit))
+  const selected = cups.find((cup) => cup.id === state.selectedId)
+  if (near || !selected) return near
+  const nextMinutes = cups.filter((cup) => cup.minute > selected.minute).map((cup) => cup.minute)
+  const riseEnd = Math.min(localPeakAfter([selected], selected, settings), ...nextMinutes)
+  const minute = xToMinute(x)
+  return minute >= selected.minute && minute <= riseEnd ? selected : undefined
+}
+
 export function hoverPoint(state: ChartState, domain: number): HoverPoint | null {
   const { cups, pointer } = state
   if (!pointer || state.hoveredId !== null || !isInsideChart(pointer)) return null
-  if (cupNear(cups, pointer.x, toggleRadius(state.pxPerUnit))) return null
+  if (cupToRemove(state, pointer.x)) return null
   const minute = xToMinute(pointer.x)
   const mg = totalAt(cups, minute, state.settings)
   return { minute, mg, x: minuteToX(minute), y: mgToDotY(mg, domain) }

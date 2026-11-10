@@ -19,3 +19,40 @@
     @apply rounded-md outline-2 outline-offset-2 outline-accent;
   }
 }
+
+/* The new theme shows through a dot grid that spreads from the toggle and grows until it covers the page. */
+@property --theme-dot {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --theme-wave {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: none;
+  }
+
+  ::view-transition-new(root) {
+    animation: theme-dots 300ms ease-in both;
+    mask-image:
+      radial-gradient(circle, #000 calc(var(--theme-dot) - 0.5px), transparent var(--theme-dot)),
+      radial-gradient(circle at var(--toggle-x, 100%) var(--toggle-y, 0), #000 var(--theme-wave), transparent calc(var(--theme-wave) + 30vmax));
+    mask-size: 10px 10px, 100% 100%;
+    mask-repeat: repeat, no-repeat;
+    mask-composite: intersect;
+  }
+}
+
+/* A dot of 8px covers its 10px cell, and the wave passes the farthest corner. */
+@keyframes theme-dots {
+  to {
+    --theme-dot: 8px;
+    --theme-wave: 150vmax;
+  }
+}

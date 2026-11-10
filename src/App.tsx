@@ -38,12 +38,16 @@ export function App() {
     setChosenLight(!light)
   }
 
-  // A cross-fade hides the swap. The timeout lets Preact render and redraw the canvas before the new snapshot.
-  function toggleTheme() {
+  // The view transition hides the swap. The timeout lets Preact render and redraw the canvas before the new snapshot.
+  function toggleTheme(event: React.MouseEvent<HTMLButtonElement>) {
     if (!document.startViewTransition) {
       applyTheme()
       return
     }
+    // The dot reveal in index.css spreads from the centre of the toggle.
+    const rect = event.currentTarget.getBoundingClientRect()
+    document.documentElement.style.setProperty('--toggle-x', `${rect.left + rect.width / 2}px`)
+    document.documentElement.style.setProperty('--toggle-y', `${rect.top + rect.height / 2}px`)
     document.startViewTransition(() => {
       applyTheme()
       return new Promise((resolve) => setTimeout(resolve))
@@ -53,7 +57,7 @@ export function App() {
   return (
     <main className="flex min-h-dvh justify-center bg-paper px-4 py-6 font-['JetBrains_Mono',ui-monospace,monospace] text-body sm:px-8 sm:py-8">
       <div className="flex w-full max-w-[min(1080px,max(22rem,calc((100dvh_-_22rem)_*_1.7)))] flex-col gap-6 sm:gap-10">
-        <header className="flex items-start justify-between gap-4">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex min-w-0 flex-col gap-1">
             <h1 className="text-[22px] leading-tight text-bright">TOO LATE FOR COFFEE?</h1>
             <p className="flex flex-wrap gap-x-[1ch] text-base text-muted sm:text-xl">

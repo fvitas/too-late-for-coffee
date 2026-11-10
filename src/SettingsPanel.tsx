@@ -1,10 +1,10 @@
 import { useState } from 'preact/hooks'
 import { Backdrop } from './Backdrop'
 import { type Settings, LIMIT_MIN_MG, formatClock } from './caffeine'
-import { LIMIT_MAX_MG } from './draw'
 
 type SettingsPanelProps = {
   settings: Settings
+  limitMaxMg: number
   onChange: (settings: Settings) => void
 }
 
@@ -14,7 +14,7 @@ type Row = {
   adjust: (direction: 1 | -1) => Settings
 }
 
-export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
+export function SettingsPanel({ settings, limitMaxMg, onChange }: SettingsPanelProps) {
   const [open, setOpen] = useState(false)
 
   const rows: Row[] = [
@@ -36,7 +36,7 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
     {
       label: 'LIMIT',
       value: `${settings.limitMg} MG`,
-      adjust: (direction) => ({ ...settings, limitMg: clamp(nextStep(settings.limitMg, 5, direction), LIMIT_MIN_MG, LIMIT_MAX_MG) }),
+      adjust: (direction) => ({ ...settings, limitMg: clamp(nextStep(settings.limitMg, 5, direction), LIMIT_MIN_MG, limitMaxMg) }),
     },
   ]
 

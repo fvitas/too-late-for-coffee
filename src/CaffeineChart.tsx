@@ -9,12 +9,12 @@ import {
   CHART_RIGHT,
   DARK_PALETTE,
   LIGHT_PALETTE,
-  LIMIT_MAX_MG,
   VIEW_HEIGHT,
   VIEW_WIDTH,
   VIEW_X,
   VIEW_Y,
   chartDomain,
+  chartTopMg,
   cupNear,
   drawChart,
   handleRadius,
@@ -77,7 +77,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     fits(labelSpan(x, labelWidth, 'right', gap)) ? 'right' : 'left'
 
   const peak = findPeak(cups, settings)
-  const domain = chartDomain(peak.mg)
+  const domain = chartDomain(peak.mg, settings.limitMg)
   const bedX = toPx(minuteToX(settings.bedMinute))
   const bedLines = [`BED ${formatClock(settings.bedMinute)}`, `${Math.round(totalAt(cups, settings.bedMinute, settings))} MG STILL IN YOU`]
   const bedWidth = textWidth(bedLines)
@@ -219,7 +219,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
 
   function handleLimitPointerMove(event: React.PointerEvent<HTMLSpanElement>) {
     if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
-    const limitMg = Math.min(LIMIT_MAX_MG, Math.max(LIMIT_MIN_MG, Math.round(yToMg(toPoint(event).y, domain))))
+    const limitMg = Math.min(chartTopMg(domain), Math.max(LIMIT_MIN_MG, Math.round(yToMg(toPoint(event).y, domain))))
     setSettings((current) => ({ ...current, limitMg }))
   }
 

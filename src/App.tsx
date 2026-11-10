@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks'
-import { type Cup, type Settings, DEFAULT_SETTINGS } from './caffeine'
+import { type Cup, type Settings, DEFAULT_SETTINGS, findPeak } from './caffeine'
 import { CaffeineChart } from './CaffeineChart'
+import { chartDomain, chartTopMg } from './draw'
 import { Icon } from './Icon'
 import { SettingsPanel } from './SettingsPanel'
 import { usePrefersLight } from './usePrefersLight'
@@ -19,6 +20,7 @@ export function App() {
   // Null follows the system theme until the user picks one.
   const [chosenLight, setChosenLight] = useState<boolean | null>(null)
   const light = chosenLight ?? prefersLight
+  const limitMaxMg = chartTopMg(chartDomain(findPeak(cups, settings).mg, settings.limitMg))
   const summary = [
     `${cups.length} ${cups.length === 1 ? 'CUP' : 'CUPS'}`,
     `CAFFEINE ${cups.reduce((sum, cup) => sum + cup.mg, 0)} MG`,
@@ -56,7 +58,7 @@ export function App() {
             >
               <Icon icon={light ? 'moon' : 'sun'} className="size-5 sm:size-6" />
             </button>
-            <SettingsPanel settings={settings} onChange={setSettings} />
+            <SettingsPanel settings={settings} limitMaxMg={limitMaxMg} onChange={setSettings} />
           </div>
         </header>
         <section className="flex flex-1 items-center">

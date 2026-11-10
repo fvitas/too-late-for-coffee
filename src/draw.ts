@@ -27,8 +27,6 @@ const FIRST_DOT_Y = 791.5
 const LINE_SPAN = 400
 const DOT_SPAN = 368
 const MIN_DOMAIN_MG = 400 / 2.4
-// The top of the chart at its smallest domain, so the limit line always stays inside the chart.
-export const LIMIT_MAX_MG = Math.floor(((BASE_Y - VIEW_Y) / LINE_SPAN) * MIN_DOMAIN_MG)
 // After its local peak a column cools from the bright rising look to the settled look over this time.
 const COOL_MINUTES = 60
 // The selected cup fades from blue to grey between these minutes from its peak.
@@ -124,8 +122,14 @@ function rowsFor(mg: number, domain: number): number {
   return Math.min(ROWS, Math.round(((mg / domain) * DOT_SPAN) / PITCH) + 1)
 }
 
-export function chartDomain(peakMg: number): number {
-  return Math.max(peakMg, MIN_DOMAIN_MG)
+// The domain also fits the limit, so the limit line stays inside the chart when the peak drops.
+export function chartDomain(peakMg: number, limitMg: number): number {
+  return Math.max(peakMg, MIN_DOMAIN_MG, (limitMg * LINE_SPAN) / (BASE_Y - VIEW_Y))
+}
+
+// The small offset absorbs float error when the limit sets the domain.
+export function chartTopMg(domain: number): number {
+  return Math.floor(yToMg(VIEW_Y, domain) + 1e-6)
 }
 
 export function handleRadius(pxPerUnit: number): number {
@@ -216,7 +220,7 @@ function crisp(x: number): number {
 export function drawChart(ctx: CanvasRenderingContext2D, state: ChartState) {
   const cups = sortByTime(state.cups)
   const peak = findPeak(cups, state.settings)
-  const domain = chartDomain(peak.mg)
+  const domain = chartDomain(peak.mg, state.settings.limitMg)
   const pen = createPen(ctx, state.stretch)
   drawColumns(pen, cups, state, peak, domain)
   const palette = state.palette

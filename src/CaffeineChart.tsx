@@ -29,6 +29,7 @@ import {
   yToMg,
 } from './draw'
 import { useDoublePress } from './useDoublePress'
+import { useEased } from './useEased'
 
 type CaffeineChartProps = {
   cups: Cup[]
@@ -53,6 +54,8 @@ const MENU_HALF_EM = 8
 const AXIS_HOURS = [0, 3, 6, 9, 12, 15, 18, 21, 24]
 const SIDES: Side[] = ['right', 'left']
 const BED_STEP_MINUTES = 15
+// The scale eases to a new peak or limit, at the same speed as the theme change.
+const RESCALE_MS = 300
 
 export function CaffeineChart({ cups, settings, selectedId, light, setCups, setSettings, setSelectedId }: CaffeineChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -80,7 +83,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     fits(labelSpan(x, labelWidth, 'right', gap)) ? 'right' : 'left'
 
   const peak = findPeak(cups, settings)
-  const domain = chartDomain(peak.mg, settings.limitMg)
+  const domain = useEased(chartDomain(peak.mg, settings.limitMg), RESCALE_MS)
   const bedX = toPx(minuteToX(settings.bedMinute))
   const bedLines = [`BED ${formatClock(settings.bedMinute)}`, `${Math.round(totalAt(cups, settings.bedMinute, settings))} MG STILL IN YOU`]
   const bedWidth = textWidth(bedLines)
@@ -97,7 +100,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
   const peakRaised = compact && peakSide === undefined
   const showPeak = peak.mg >= 1 && (peakSide !== undefined || peakRaised)
 
-  const chartState: ChartState = { cups, settings, selectedId, hoveredId, pointer, pxPerUnit, stretch, showPeak, palette }
+  const chartState: ChartState = { cups, settings, selectedId, hoveredId, pointer, domain, pxPerUnit, stretch, showPeak, palette }
   const hover = hoverPoint(chartState, domain)
   const hoverLabel = hover ? `${formatClock(hover.minute)} · ${Math.round(hover.mg)} MG` : ''
   const hoverX = hover ? toPx(hover.x) : 0

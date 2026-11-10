@@ -80,6 +80,7 @@ export type ChartState = {
   selectedId: number | null
   hoveredId: number | null
   pointer: Point | null
+  domain: number
   pxPerUnit: number
   stretch: number
   showPeak: boolean
@@ -232,7 +233,7 @@ function crisp(x: number): number {
 export function drawChart(ctx: CanvasRenderingContext2D, state: ChartState) {
   const cups = sortByTime(state.cups)
   const peak = findPeak(cups, state.settings)
-  const domain = chartDomain(peak.mg, state.settings.limitMg)
+  const domain = state.domain
   const pen = createPen(ctx, state.stretch)
   drawColumns(pen, cups, state, peak, domain)
   const palette = state.palette

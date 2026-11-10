@@ -46,7 +46,7 @@ export function App() {
             setSelectedId={setSelectedId}
           />
         </section>
-        <footer className="self-end text-xs text-[#757575]">
+        <footer className="self-end text-[8px] text-[#757575] sm:text-[10px]">
           INSPIRED BY{' '}
           <a
             href="https://x.com/PostiauxCharles/status/2119801461278146758"

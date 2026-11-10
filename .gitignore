@@ -2,3 +2,5 @@ node_modules
 dist
 .playwright-mcp
 tsconfig.tsbuildinfo
+.vercel
+.env*

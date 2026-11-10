@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
-import { type Cup, type Settings, DEFAULT_SETTINGS, LIMIT_MIN_MG, MAX_CUPS, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
+import { type Cup, type Settings, BED_RANGE_MINUTES, DEFAULT_SETTINGS, LIMIT_MIN_MG, MAX_CUPS, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
 import { Backdrop } from './Backdrop'
 import { CupLimitModal } from './CupLimitModal'
 import { DrinkMenu } from './DrinkMenu'
@@ -52,13 +52,14 @@ const ICON_BUTTON_HALF_PX = 18
 const MENU_HALF_EM = 8
 const AXIS_HOURS = [0, 3, 6, 9, 12, 15, 18, 21, 24]
 const SIDES: Side[] = ['right', 'left']
+const BED_STEP_MINUTES = 15
 
 export function CaffeineChart({ cups, settings, selectedId, light, setCups, setSettings, setSelectedId }: CaffeineChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const draggingId = useRef<number | null>(null)
-  const pressCup = useDoublePress()
-  const pressLimit = useDoublePress()
+  const pressCup = useDoublePress<number>()
+  const pressLine = useDoublePress<'limitMg' | 'bedMinute'>()
   const [{ width, height }, setSize] = useState({ width: 0, height: 0 })
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [pointer, setPointer] = useState<Point | null>(null)
@@ -216,18 +217,31 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     setCups((current) => current.map((cup) => (cup.id === id ? { ...cup, minute: xToMinute(point.x) } : cup)))
   }
 
-  function handleLimitPointerDown(event: React.PointerEvent<HTMLSpanElement>) {
-    if (pressLimit(0, event.timeStamp)) {
-      setSettings((current) => ({ ...current, limitMg: DEFAULT_SETTINGS.limitMg }))
-      return
+  // Drags the limit or bed line, and a double press resets that setting to its default.
+  function lineHandlers(key: 'limitMg' | 'bedMinute', valueAt: (point: Point) => number) {
+    return {
+      onPointerDown(event: React.PointerEvent<HTMLElement>) {
+        if (pressLine(key, event.timeStamp)) {
+          setSettings((current) => ({ ...current, [key]: DEFAULT_SETTINGS[key] }))
+          return
+        }
+        event.currentTarget.setPointerCapture(event.pointerId)
+      },
+      onPointerMove(event: React.PointerEvent<HTMLElement>) {
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
+        const value = valueAt(toPoint(event))
+        setSettings((current) => ({ ...current, [key]: value }))
+      },
     }
-    event.currentTarget.setPointerCapture(event.pointerId)
   }
 
-  function handleLimitPointerMove(event: React.PointerEvent<HTMLSpanElement>) {
-    if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
-    const limitMg = Math.min(chartTopMg(domain), Math.max(LIMIT_MIN_MG, Math.round(yToMg(toPoint(event).y, domain))))
-    setSettings((current) => ({ ...current, limitMg }))
+  function limitAt(point: Point): number {
+    return Math.min(chartTopMg(domain), Math.max(LIMIT_MIN_MG, Math.round(yToMg(point.y, domain))))
+  }
+
+  function bedAt(point: Point): number {
+    const minute = Math.round(xToMinute(point.x) / BED_STEP_MINUTES) * BED_STEP_MINUTES
+    return Math.min(BED_RANGE_MINUTES[1], Math.max(BED_RANGE_MINUTES[0], minute))
   }
 
   function handleTrackPointerUp() {
@@ -250,6 +264,12 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
           onPointerLeave={() => setPointer(null)}
           onClick={handleCanvasClick}
         />
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0 w-6 -translate-x-1/2 cursor-ew-resize touch-none select-none"
+          style={{ left: bedX }}
+          {...lineHandlers('bedMinute', bedAt)}
+        />
         <TopLabel x={bedX} width={width} side={bedSide}>
           <span className="text-bright">{bedLines[0]}</span>
           <span className="text-body">{bedLines[1]}</span>
@@ -263,8 +283,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
         <span
           className="absolute -ml-2 -translate-y-1/2 cursor-ns-resize touch-none bg-paper px-2 py-1 text-muted select-none hover:text-bright active:text-bright"
           style={{ left: limitLeft, top: Math.max(0, toPy(mgToY(settings.limitMg, domain))) }}
-          onPointerDown={handleLimitPointerDown}
-          onPointerMove={handleLimitPointerMove}
+          {...lineHandlers('limitMg', limitAt)}
         >
           {settings.limitMg}
         </span>

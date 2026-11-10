@@ -40,7 +40,7 @@ function ShareLink({ url, onCopied }: ShareLinkProps) {
   }
 
   return (
-    <div className="flex w-[min(28rem,calc(100vw-4rem-2px))] items-center gap-3">
+    <div className="flex w-full items-center gap-3 sm:w-md">
       <input
         readOnly
         value={url}

@@ -41,7 +41,7 @@ export function SettingsPanel({ settings, limitMaxMg, onChange }: SettingsPanelP
     <Popover label="SETTINGS" closeLabel="Close settings">
       {() =>
         rows.map((row) => (
-          <div key={row.label} className="flex items-center justify-end gap-3 whitespace-nowrap">
+          <div key={row.label} className="flex items-center justify-end gap-2 whitespace-nowrap sm:gap-3">
             <span>{row.label}</span>
             <span className="w-[6ch] text-right text-bright">{row.value}</span>
             <Stepper label={`Decrease ${row.label}`} symbol="−" onClick={() => onChange(row.adjust(-1))} />

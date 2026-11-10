@@ -47,7 +47,7 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
         className="relative z-20 cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright focus-visible:outline-none sm:text-xl"
         onClick={() => setOpen(!open)}
       >
-        {open ? 'CLOSE' : 'SETTINGS'}
+        SETTINGS
       </button>
       {open && <Backdrop label="Close settings" onClose={() => setOpen(false)} />}
       {open && (

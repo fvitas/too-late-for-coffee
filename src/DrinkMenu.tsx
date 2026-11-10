@@ -8,7 +8,7 @@ type DrinkMenuProps = {
 
 export function DrinkMenu({ cup, onPick }: DrinkMenuProps) {
   return (
-    <div role="menu" className="flex w-[16em] flex-col border border-line bg-paper p-1 shadow-lg shadow-shade">
+    <div role="menu" className="flex w-[16em] flex-col rounded-md border border-line bg-paper p-1 shadow-lg shadow-shade">
       {DRINKS.map((drink) => {
         const active = cup.mg === drink.mg
         return (

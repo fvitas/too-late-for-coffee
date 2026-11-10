@@ -51,7 +51,7 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
       </button>
       {open && <Backdrop label="Close settings" onClose={() => setOpen(false)} />}
       {open && (
-        <div className="absolute top-full right-0 z-20 mt-2 flex flex-col gap-2 border border-line bg-paper p-4 text-muted shadow-lg shadow-shade">
+        <div className="absolute top-full right-0 z-20 mt-2 flex flex-col gap-2 rounded-md border border-line bg-paper p-4 text-muted shadow-lg shadow-shade">
           {rows.map((row) => (
             <div key={row.label} className="flex items-center justify-end gap-3 whitespace-nowrap">
               <span>{row.label}</span>

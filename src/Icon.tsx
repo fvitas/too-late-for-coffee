@@ -5,20 +5,26 @@ import espresso from './assets/drinks/espresso.svg'
 import matcha from './assets/drinks/matcha.svg'
 import pourOver from './assets/drinks/pour-over.svg'
 import tea from './assets/drinks/tea.svg'
+import moon from './assets/theme/moon.svg'
+import sun from './assets/theme/sun.svg'
 
-const SOURCES: Record<DrinkIconName, string> = {
+export type IconName = DrinkIconName | 'sun' | 'moon'
+
+const SOURCES: Record<IconName, string> = {
   espresso,
   'pour-over': pourOver,
   matcha,
   tea,
   'caffeine-pill': caffeinePill,
   cup,
+  sun,
+  moon,
 }
 
-type DrinkIconProps = { icon: DrinkIconName; className?: string; style?: React.CSSProperties }
+type IconProps = { icon: IconName; className?: string; style?: React.CSSProperties }
 
 // The SVG is a mask, so the icon takes the text colour.
-export function DrinkIcon({ icon, className = '', style }: DrinkIconProps) {
+export function Icon({ icon, className = '', style }: IconProps) {
   return (
     <span
       aria-hidden

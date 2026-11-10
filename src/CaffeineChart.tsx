@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { type Cup, type Settings, DEFAULT_SETTINGS, LIMIT_MAX_MG, LIMIT_MIN_MG, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
 import { Backdrop } from './Backdrop'
-import { DrinkIcon } from './DrinkIcon'
 import { DrinkMenu } from './DrinkMenu'
+import { Icon } from './Icon'
 import {
   type ChartState,
   type Point,
   CHART_RIGHT,
+  DARK_PALETTE,
+  LIGHT_PALETTE,
   VIEW_HEIGHT,
   VIEW_WIDTH,
   VIEW_X,
@@ -30,6 +32,7 @@ type CaffeineChartProps = {
   cups: Cup[]
   settings: Settings
   selectedId: number | null
+  light: boolean
   setCups: React.Dispatch<React.SetStateAction<Cup[]>>
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
   setSelectedId: (id: number | null) => void
@@ -48,7 +51,7 @@ const MENU_HALF_EM = 8
 const AXIS_HOURS = [0, 3, 6, 9, 12, 15, 18, 21, 24]
 const SIDES: Side[] = ['right', 'left']
 
-export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings, setSelectedId }: CaffeineChartProps) {
+export function CaffeineChart({ cups, settings, selectedId, light, setCups, setSettings, setSelectedId }: CaffeineChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const draggingId = useRef<number | null>(null)
@@ -58,6 +61,7 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [pointer, setPointer] = useState<Point | null>(null)
   const [menuCupId, setMenuCupId] = useState<number | null>(null)
+  const palette = light ? LIGHT_PALETTE : DARK_PALETTE
 
   const pxPerUnit = width / VIEW_WIDTH
   const yPxPerUnit = height / VIEW_HEIGHT
@@ -89,7 +93,7 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
   const peakRaised = compact && peakSide === undefined
   const showPeak = peak.mg >= 1 && (peakSide !== undefined || peakRaised)
 
-  const chartState: ChartState = { cups, settings, selectedId, hoveredId, pointer, pxPerUnit, stretch, showPeak }
+  const chartState: ChartState = { cups, settings, selectedId, hoveredId, pointer, pxPerUnit, stretch, showPeak, palette }
   const hover = hoverPoint(chartState, domain)
   const hoverLabel = hover ? `${formatClock(hover.minute)} · ${Math.round(hover.mg)} MG` : ''
   const hoverX = hover ? toPx(hover.x) : 0
@@ -241,17 +245,17 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
           onClick={handleCanvasClick}
         />
         <TopLabel x={bedX} width={width} side={bedSide}>
-          <span className="text-[#f7f7f7]">{bedLines[0]}</span>
-          <span className="text-[#dcdcdc]">{bedLines[1]}</span>
+          <span className="text-bright">{bedLines[0]}</span>
+          <span className="text-body">{bedLines[1]}</span>
         </TopLabel>
         {showPeak && (
           <TopLabel x={peakX} width={width} side={peakSide ?? sideFor(peakX, peakWidth, LABEL_GAP_PX)} raised={peakRaised}>
-            <span className="text-[#dcdcdc]">{peakLines[0]}</span>
-            <span className="text-[#757575]">{peakLines[1]}</span>
+            <span className="text-body">{peakLines[0]}</span>
+            <span className="text-muted">{peakLines[1]}</span>
           </TopLabel>
         )}
         <span
-          className="absolute -ml-2 -translate-y-1/2 cursor-ns-resize touch-none bg-[#0e0e0e] px-2 py-1 text-[#757575] select-none hover:text-[#f2f2f2] active:text-[#f2f2f2]"
+          className="absolute -ml-2 -translate-y-1/2 cursor-ns-resize touch-none bg-paper px-2 py-1 text-muted select-none hover:text-bright active:text-bright"
           style={{ left: limitLeft, top: Math.max(0, toPy(mgToY(settings.limitMg, domain))) }}
           onPointerDown={handleLimitPointerDown}
           onPointerMove={handleLimitPointerMove}
@@ -260,14 +264,14 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
         </span>
         {hover && (
           <span
-            className="pointer-events-none absolute bg-[#0e0e0e] px-1.5 py-0.5 whitespace-nowrap text-[#f7f7f7]"
+            className="pointer-events-none absolute bg-paper px-1.5 py-0.5 whitespace-nowrap text-bright"
             style={{ ...sideStyle(hoverX, width, hoverSide, HOVER_GAP_PX), bottom: height - toPy(hover.y) + HOVER_GAP_PX }}
           >
             {hoverLabel}
           </span>
         )}
       </div>
-      <div className="pointer-events-none relative h-[1.5em] text-[#3a3a3a]">
+      <div className="pointer-events-none relative h-[1.5em] text-faint">
         {AXIS_HOURS.map((hour) => (
           <span
             key={hour}
@@ -282,7 +286,7 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
         {timedCups.map((cup) => (
           <span
             key={cup.id}
-            className={`absolute top-0.5 -translate-x-1/2 ${cup.id === selectedId ? 'text-[#3b82f6]' : 'text-[#f7f7f7]'}`}
+            className={`absolute top-0.5 -translate-x-1/2 ${cup.id === selectedId ? 'text-accent' : 'text-bright'}`}
             style={{ left: centerWithin(toPx(minuteToX(cup.minute)), formatClock(cup.minute)) }}
           >
             {formatClock(cup.minute)}
@@ -303,7 +307,7 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
           return (
             <span
               key={cup.id}
-              className={`pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${cup.id === selectedId ? 'bg-[#3b82f6]' : hovered ? 'bg-[#ececec]' : 'bg-[#d4d4d4]'}`}
+              className={`pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${cup.id === selectedId ? 'bg-accent' : hovered ? 'bg-bright' : 'bg-body'}`}
               style={{ left: toPx(minuteToX(cup.minute)), width: size, height: size }}
             />
           )
@@ -328,11 +332,11 @@ export function CaffeineChart({ cups, settings, selectedId, setCups, setSettings
             aria-label={`Change drink at ${formatClock(cup.minute)}`}
             aria-haspopup="menu"
             aria-expanded={menuCupId === cup.id}
-            className={`absolute top-0 flex -translate-x-1/2 cursor-pointer p-2 transition-colors sm:p-1.5 ${cup.id === selectedId ? 'text-[#3b82f6]' : 'text-[#757575] hover:text-[#f2f2f2]'}`}
+            className={`absolute top-0 flex -translate-x-1/2 cursor-pointer p-2 transition-colors sm:p-1.5 ${cup.id === selectedId ? 'text-accent' : 'text-muted hover:text-bright'}`}
             style={{ left: clampCenter(toPx(minuteToX(cup.minute)), ICON_BUTTON_HALF_PX) }}
             onClick={() => toggleMenu(cup)}
           >
-            <DrinkIcon icon={drinkIconFor(cup.mg)} className="size-5" />
+            <Icon icon={drinkIconFor(cup.mg)} className="size-5" />
           </button>
         ))}
       </div>

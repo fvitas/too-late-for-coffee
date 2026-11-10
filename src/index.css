@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+/* Each token is light-dark(light, dark), so it follows the color-scheme of <html>. */
+@theme {
+  --color-paper: light-dark(#f5f5f4, #0e0e0e);
+  --color-bright: light-dark(#111111, #f7f7f7);
+  --color-body: light-dark(#333333, #dcdcdc);
+  --color-soft: light-dark(#555555, #bdbdbd);
+  --color-muted: light-dark(#707070, #757575);
+  --color-faint: light-dark(#c4c4c4, #3a3a3a);
+  --color-line: light-dark(#e2e2e0, #1f1f1f);
+  --color-accent: #3b82f6;
+  --color-shade: light-dark(rgb(0 0 0 / 0.08), #000000);
+}

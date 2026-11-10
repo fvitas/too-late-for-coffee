@@ -44,18 +44,18 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
       <button
         type="button"
         aria-expanded={open}
-        className="relative z-20 cursor-pointer py-2 text-base text-[#757575] transition-colors hover:text-[#f2f2f2] focus-visible:text-[#f2f2f2] focus-visible:outline-none sm:text-xl"
+        className="relative z-20 cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright focus-visible:outline-none sm:text-xl"
         onClick={() => setOpen(!open)}
       >
         {open ? 'CLOSE' : 'SETTINGS'}
       </button>
       {open && <Backdrop label="Close settings" onClose={() => setOpen(false)} />}
       {open && (
-        <div className="absolute top-full right-0 z-20 mt-2 flex flex-col gap-2 border border-[#1f1f1f] bg-[#0e0e0e] p-4 text-[#757575] shadow-lg shadow-black">
+        <div className="absolute top-full right-0 z-20 mt-2 flex flex-col gap-2 border border-line bg-paper p-4 text-muted shadow-lg shadow-shade">
           {rows.map((row) => (
             <div key={row.label} className="flex items-center justify-end gap-3 whitespace-nowrap">
               <span>{row.label}</span>
-              <span className="w-[6ch] text-right text-[#f2f2f2]">{row.value}</span>
+              <span className="w-[6ch] text-right text-bright">{row.value}</span>
               <Stepper label={`Decrease ${row.label}`} symbol="−" onClick={() => onChange(row.adjust(-1))} />
               <Stepper label={`Increase ${row.label}`} symbol="+" onClick={() => onChange(row.adjust(1))} />
             </div>
@@ -73,7 +73,7 @@ function Stepper({ label, symbol, onClick }: StepperProps) {
     <button
       type="button"
       aria-label={label}
-      className="size-10 shrink-0 cursor-pointer rounded-full border border-[#3a3a3a] text-[#bdbdbd] transition-colors hover:border-[#f2f2f2] hover:text-[#f2f2f2] focus-visible:border-[#f2f2f2] focus-visible:outline-none sm:size-8"
+      className="size-10 shrink-0 cursor-pointer rounded-full border border-faint text-soft transition-colors hover:border-bright hover:text-bright focus-visible:border-bright focus-visible:outline-none sm:size-8"
       onClick={onClick}
     >
       {symbol}

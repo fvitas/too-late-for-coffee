@@ -39,14 +39,38 @@ const BLUE_MIN_SIZE = 0.08
 const BLUE_MIN_ALPHA = 0.9
 const GUIDE_START_Y = 807.5
 
-const BRIGHT = '#f7f7f7'
-const SUBTLE = '#3a3a3a'
-const AXIS = '#1f1f1f'
-const BED_LINE = '#6f6f6f'
-const PEAK_LINE = '#3b3b3b'
-const WHITE_RGB = '255,255,255'
 const BLUE_DOT = [52, 132, 255]
-const GUIDE_FADED_BLUE = 'rgb(103,127,179)'
+
+// Dots are ink with alpha on the page colour: white on dark, near-black on light.
+export type Palette = {
+  ink: number[]
+  bright: string
+  subtle: string
+  axis: string
+  bedLine: string
+  peakLine: string
+  guideBlue: string
+}
+
+export const DARK_PALETTE: Palette = {
+  ink: [255, 255, 255],
+  bright: '#f7f7f7',
+  subtle: '#3a3a3a',
+  axis: '#1f1f1f',
+  bedLine: '#6f6f6f',
+  peakLine: '#3b3b3b',
+  guideBlue: 'rgb(103,127,179)',
+}
+
+export const LIGHT_PALETTE: Palette = {
+  ink: [17, 17, 17],
+  bright: '#111111',
+  subtle: '#c4c4c4',
+  axis: '#e2e2e0',
+  bedLine: '#8f8f8f',
+  peakLine: '#c4c4c4',
+  guideBlue: 'rgb(140,165,215)',
+}
 
 export type Point = { x: number; y: number }
 
@@ -59,6 +83,7 @@ export type ChartState = {
   pxPerUnit: number
   stretch: number
   showPeak: boolean
+  palette: Palette
 }
 
 export type HoverPoint = { minute: number; mg: number; x: number; y: number }
@@ -141,8 +166,8 @@ function smoothstep(from: number, to: number, value: number): number {
   return t * t * (3 - 2 * t)
 }
 
-function blueMix(amount: number): string {
-  return BLUE_DOT.map((channel) => Math.round(255 + (channel - 255) * amount)).join(',')
+function blueMix(ink: number[], amount: number): string {
+  return BLUE_DOT.map((channel, index) => Math.round(ink[index] + (channel - ink[index]) * amount)).join(',')
 }
 
 function radiusFor(alpha: number): number {
@@ -192,13 +217,14 @@ export function drawChart(ctx: CanvasRenderingContext2D, state: ChartState) {
   const domain = chartDomain(peak.mg)
   const pen = createPen(ctx, state.stretch)
   drawColumns(pen, cups, state, peak, domain)
-  drawLimit(pen, state.settings, domain)
-  drawAxis(pen)
-  drawBed(pen, state.settings)
-  if (state.showPeak) drawPeak(pen, peak, domain)
+  const palette = state.palette
+  drawLimit(pen, state.settings, domain, palette)
+  drawAxis(pen, palette)
+  drawBed(pen, state.settings, palette)
+  if (state.showPeak) drawPeak(pen, peak, domain, palette)
   drawGuides(pen, cups, state, domain)
   const hover = hoverPoint(state, domain)
-  if (hover) pen.dot(hover.x, hover.y, 4, BRIGHT)
+  if (hover) pen.dot(hover.x, hover.y, 4, palette.bright)
 }
 
 function settledAlpha(share: number): number {
@@ -243,7 +269,7 @@ function columnCells(cups: Cup[], x: number, state: ChartState, domain: number, 
     // A later cup's band rises in solid blue, but its size follows the same gradient as the grey dots.
     const solid = isFirst ? 0 : heat * tint
     const radius = radiusFor(Math.max(alpha, BLUE_MIN_SIZE * floor))
-    cells.push({ row, alpha: Math.max(alpha, BLUE_MIN_ALPHA * floor, solid), rgb: blueMix(tint), radius })
+    cells.push({ row, alpha: Math.max(alpha, BLUE_MIN_ALPHA * floor, solid), rgb: blueMix(state.palette.ink, tint), radius })
   }
   return cells
 }
@@ -262,32 +288,32 @@ function drawColumns(pen: Pen, cups: Cup[], state: ChartState, peak: Peak, domai
     const firstEmpty = cells.length === 0 ? 0 : cells[cells.length - 1].row + 1
     for (let row = firstEmpty; row < ROWS; row++) {
       if ((column + row) % 2 === 0) continue
-      pen.dot(x, rowY(row), 1, `rgba(${WHITE_RGB},0.03)`)
+      pen.dot(x, rowY(row), 1, `rgba(${state.palette.ink},0.03)`)
     }
   }
 }
 
-function drawLimit(pen: Pen, settings: Settings, domain: number) {
+function drawLimit(pen: Pen, settings: Settings, domain: number, palette: Palette) {
   const y = crisp(mgToY(settings.limitMg, domain))
-  pen.line(CHART_LEFT, y, CHART_RIGHT, y, SUBTLE, [4, 8])
+  pen.line(CHART_LEFT, y, CHART_RIGHT, y, palette.subtle, [4, 8])
 }
 
-function drawAxis(pen: Pen) {
-  pen.line(CHART_LEFT, BASE_Y + 1, CHART_RIGHT + 2, BASE_Y + 1, AXIS)
+function drawAxis(pen: Pen, palette: Palette) {
+  pen.line(CHART_LEFT, BASE_Y + 1, CHART_RIGHT + 2, BASE_Y + 1, palette.axis)
   for (let hour = 0; hour <= 24; hour += 3) {
     const x = crisp(minuteToX(hour * 60))
-    pen.line(x, BASE_Y + 1, x, BASE_Y + 9, SUBTLE)
+    pen.line(x, BASE_Y + 1, x, BASE_Y + 9, palette.subtle)
   }
 }
 
-function drawBed(pen: Pen, settings: Settings) {
+function drawBed(pen: Pen, settings: Settings, palette: Palette) {
   const x = crisp(minuteToX(settings.bedMinute))
-  pen.line(x, TOP_Y, x, FIRST_DOT_Y, BED_LINE)
+  pen.line(x, TOP_Y, x, FIRST_DOT_Y, palette.bedLine)
 }
 
-function drawPeak(pen: Pen, peak: Peak, domain: number) {
+function drawPeak(pen: Pen, peak: Peak, domain: number, palette: Palette) {
   const x = crisp(minuteToX(peak.minute))
-  pen.line(x, TOP_Y, x, rowY(rowsFor(peak.mg, domain) - 1) - 4, PEAK_LINE)
+  pen.line(x, TOP_Y, x, rowY(rowsFor(peak.mg, domain) - 1) - 4, palette.peakLine)
 }
 
 function drawGuides(pen: Pen, cups: Cup[], state: ChartState, domain: number) {
@@ -295,7 +321,7 @@ function drawGuides(pen: Pen, cups: Cup[], state: ChartState, domain: number) {
     const x = minuteToX(cup.minute)
     const selected = cup.id === state.selectedId
     const topY = mgToDotY(totalAt(cups, cup.minute + 60, state.settings), domain)
-    const color = selected ? GUIDE_FADED_BLUE : SUBTLE
+    const color = selected ? state.palette.guideBlue : state.palette.subtle
     for (let y = GUIDE_START_Y; y >= topY; y -= PITCH) pen.square(x, y, color)
   }
 }

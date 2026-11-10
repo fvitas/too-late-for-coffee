@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef } from 'preact/hooks'
 
 // iOS Safari sends no dblclick for touch, so two presses on the same key within this time count as a double press.
 const DOUBLE_PRESS_MS = 350

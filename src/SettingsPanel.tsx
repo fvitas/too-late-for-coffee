@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState } from 'preact/hooks'
 import { Backdrop } from './Backdrop'
-import { type Settings, LIMIT_MAX_MG, LIMIT_MIN_MG, formatClock } from './caffeine'
+import { type Settings, LIMIT_MIN_MG, formatClock } from './caffeine'
+import { LIMIT_MAX_MG } from './draw'
 
 type SettingsPanelProps = {
   settings: Settings

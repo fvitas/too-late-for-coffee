@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from 'preact/hooks'
 import { type DrinkIconName, DRINKS } from '../caffeine'
 import { DotIcon } from './DotIcon'
 import { type Concept, type DotShape, type DotStyle, type IconGroup, type Mode, ICON_GROUPS, dotsFor } from './dotIcons'

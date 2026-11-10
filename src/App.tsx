@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from 'preact/hooks'
 import { type Cup, type Settings, DEFAULT_SETTINGS } from './caffeine'
 import { CaffeineChart } from './CaffeineChart'
 import { Icon } from './Icon'

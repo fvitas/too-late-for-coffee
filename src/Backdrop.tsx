@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect } from 'preact/hooks'
 
 type BackdropProps = { label: string; onClose: () => void }
 

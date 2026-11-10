@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'preact/compat'
 
 const query = window.matchMedia('(prefers-color-scheme: light)')
 

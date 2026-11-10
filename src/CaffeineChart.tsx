@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { type Cup, type Settings, DEFAULT_SETTINGS, LIMIT_MAX_MG, LIMIT_MIN_MG, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
+import { useEffect, useRef, useState } from 'preact/hooks'
+import { type Cup, type Settings, DEFAULT_SETTINGS, LIMIT_MIN_MG, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
 import { Backdrop } from './Backdrop'
 import { DrinkMenu } from './DrinkMenu'
 import { Icon } from './Icon'
@@ -9,6 +9,7 @@ import {
   CHART_RIGHT,
   DARK_PALETTE,
   LIGHT_PALETTE,
+  LIMIT_MAX_MG,
   VIEW_HEIGHT,
   VIEW_WIDTH,
   VIEW_X,

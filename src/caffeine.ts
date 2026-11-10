@@ -15,8 +15,6 @@ export const DAY_MINUTES = 24 * 60
 export const DAY_START_HOUR = 6
 
 export const LIMIT_MIN_MG = 5
-// The top of the chart is 187.5 MG at the smallest domain, so a higher limit line leaves the chart.
-export const LIMIT_MAX_MG = 185
 
 export const DRINKS: Drink[] = [
   { name: 'TEA', mg: 30, icon: 'tea' },

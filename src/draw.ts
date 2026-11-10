@@ -27,6 +27,8 @@ const FIRST_DOT_Y = 791.5
 const LINE_SPAN = 400
 const DOT_SPAN = 368
 const MIN_DOMAIN_MG = 400 / 2.4
+// The top of the chart at its smallest domain, so the limit line always stays inside the chart.
+export const LIMIT_MAX_MG = Math.floor(((BASE_Y - VIEW_Y) / LINE_SPAN) * MIN_DOMAIN_MG)
 // After its local peak a column cools from the bright rising look to the settled look over this time.
 const COOL_MINUTES = 60
 // The selected cup fades from blue to grey between these minutes from its peak.

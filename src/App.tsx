@@ -4,6 +4,8 @@ import { CaffeineChart } from './CaffeineChart'
 import { chartDomain, chartTopMg } from './draw'
 import { Icon } from './Icon'
 import { SettingsPanel } from './SettingsPanel'
+import { parseShareQuery } from './share'
+import { SharePanel } from './SharePanel'
 import { usePrefersLight } from './usePrefersLight'
 
 const INITIAL_CUPS: Cup[] = [
@@ -12,10 +14,12 @@ const INITIAL_CUPS: Cup[] = [
   { id: 3, minute: 9 * 60 + 30, mg: DEFAULT_SETTINGS.doseMg },
 ]
 
+const SHARED = parseShareQuery(window.location.search)
+
 export function App() {
-  const [cups, setCups] = useState<Cup[]>(INITIAL_CUPS)
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
-  const [selectedId, setSelectedId] = useState<number | null>(3)
+  const [cups, setCups] = useState<Cup[]>(SHARED.cups ?? INITIAL_CUPS)
+  const [settings, setSettings] = useState<Settings>(SHARED.settings)
+  const [selectedId, setSelectedId] = useState<number | null>(cups[cups.length - 1].id)
   const prefersLight = usePrefersLight()
   // Null follows the system theme until the user picks one.
   const [chosenLight, setChosenLight] = useState<boolean | null>(null)
@@ -49,7 +53,7 @@ export function App() {
               ))}
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-5 sm:gap-6">
+          <div className="relative flex shrink-0 items-center gap-5 sm:gap-6">
             <button
               type="button"
               aria-label={light ? 'Switch to dark theme' : 'Switch to light theme'}
@@ -58,6 +62,7 @@ export function App() {
             >
               <Icon icon={light ? 'moon' : 'sun'} className="size-5 sm:size-6" />
             </button>
+            <SharePanel cups={cups} settings={settings} />
             <SettingsPanel settings={settings} limitMaxMg={limitMaxMg} onChange={setSettings} />
           </div>
         </header>

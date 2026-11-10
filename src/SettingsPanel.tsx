@@ -1,6 +1,5 @@
-import { useState } from 'preact/hooks'
-import { Backdrop } from './Backdrop'
-import { type Settings, LIMIT_MIN_MG, formatClock } from './caffeine'
+import { type Settings, BED_RANGE_MINUTES, DOSE_RANGE_MG, HALF_LIFE_RANGE_H, LIMIT_MIN_MG, formatClock } from './caffeine'
+import { Popover } from './Popover'
 
 type SettingsPanelProps = {
   settings: Settings
@@ -15,23 +14,21 @@ type Row = {
 }
 
 export function SettingsPanel({ settings, limitMaxMg, onChange }: SettingsPanelProps) {
-  const [open, setOpen] = useState(false)
-
   const rows: Row[] = [
     {
       label: 'DEFAULT DOSE',
       value: `${settings.doseMg} MG`,
-      adjust: (direction) => ({ ...settings, doseMg: clamp(settings.doseMg + 5 * direction, 20, 400) }),
+      adjust: (direction) => ({ ...settings, doseMg: clamp(settings.doseMg + 5 * direction, ...DOSE_RANGE_MG) }),
     },
     {
       label: 'HALF-LIFE',
       value: `${settings.halfLifeH}H`,
-      adjust: (direction) => ({ ...settings, halfLifeH: clamp(settings.halfLifeH + direction, 1, 12) }),
+      adjust: (direction) => ({ ...settings, halfLifeH: clamp(settings.halfLifeH + direction, ...HALF_LIFE_RANGE_H) }),
     },
     {
       label: 'BED',
       value: formatClock(settings.bedMinute),
-      adjust: (direction) => ({ ...settings, bedMinute: clamp(settings.bedMinute + 15 * direction, 10 * 60, 23 * 60) }),
+      adjust: (direction) => ({ ...settings, bedMinute: clamp(settings.bedMinute + 15 * direction, ...BED_RANGE_MINUTES) }),
     },
     {
       label: 'LIMIT',
@@ -41,29 +38,18 @@ export function SettingsPanel({ settings, limitMaxMg, onChange }: SettingsPanelP
   ]
 
   return (
-    <div className="relative shrink-0 text-sm sm:text-base">
-      <button
-        type="button"
-        aria-expanded={open}
-        className="relative z-20 cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright sm:text-xl"
-        onClick={() => setOpen(!open)}
-      >
-        SETTINGS
-      </button>
-      {open && <Backdrop label="Close settings" onClose={() => setOpen(false)} />}
-      {open && (
-        <div className="absolute top-full right-0 z-20 mt-2 flex flex-col gap-2 rounded-md border border-line bg-paper p-4 text-muted shadow-lg shadow-shade">
-          {rows.map((row) => (
-            <div key={row.label} className="flex items-center justify-end gap-3 whitespace-nowrap">
-              <span>{row.label}</span>
-              <span className="w-[6ch] text-right text-bright">{row.value}</span>
-              <Stepper label={`Decrease ${row.label}`} symbol="−" onClick={() => onChange(row.adjust(-1))} />
-              <Stepper label={`Increase ${row.label}`} symbol="+" onClick={() => onChange(row.adjust(1))} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <Popover label="SETTINGS" closeLabel="Close settings">
+      {() =>
+        rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-end gap-3 whitespace-nowrap">
+            <span>{row.label}</span>
+            <span className="w-[6ch] text-right text-bright">{row.value}</span>
+            <Stepper label={`Decrease ${row.label}`} symbol="−" onClick={() => onChange(row.adjust(-1))} />
+            <Stepper label={`Increase ${row.label}`} symbol="+" onClick={() => onChange(row.adjust(1))} />
+          </div>
+        ))
+      }
+    </Popover>
   )
 }
 

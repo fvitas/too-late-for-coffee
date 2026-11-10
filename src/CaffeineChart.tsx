@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
-import { type Cup, type Settings, DEFAULT_SETTINGS, LIMIT_MIN_MG, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
+import { type Cup, type Settings, DEFAULT_SETTINGS, LIMIT_MIN_MG, MAX_CUPS, drinkIconFor, findPeak, formatClock, totalAt } from './caffeine'
 import { Backdrop } from './Backdrop'
+import { CupLimitModal } from './CupLimitModal'
 import { DrinkMenu } from './DrinkMenu'
 import { Icon } from './Icon'
 import {
@@ -62,6 +63,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [pointer, setPointer] = useState<Point | null>(null)
   const [menuCupId, setMenuCupId] = useState<number | null>(null)
+  const [cupLimitOpen, setCupLimitOpen] = useState(false)
   const palette = light ? LIGHT_PALETTE : DARK_PALETTE
 
   const pxPerUnit = width / VIEW_WIDTH
@@ -147,7 +149,11 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     }
   }
 
-  function addCup(x: number): Cup {
+  function addCup(x: number): Cup | null {
+    if (cups.length >= MAX_CUPS) {
+      setCupLimitOpen(true)
+      return null
+    }
     const cup = { id: Math.max(0, ...cups.map((current) => current.id)) + 1, minute: xToMinute(x), mg: settings.doseMg }
     setCups((current) => [...current, cup])
     setSelectedId(cup.id)
@@ -193,6 +199,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     }
     if (hit) setSelectedId(hit.id)
     const cup = hit ?? addCup(point.x)
+    if (!cup) return
     if (!hit) pressCup(cup.id, event.timeStamp)
     draggingId.current = cup.id
     setHoveredId(cup.id)
@@ -339,6 +346,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
           </button>
         ))}
       </div>
+      {cupLimitOpen && <CupLimitModal onClose={() => setCupLimitOpen(false)} />}
     </figure>
   )
 }

@@ -15,6 +15,11 @@ export const DAY_MINUTES = 24 * 60
 export const DAY_START_HOUR = 6
 
 export const LIMIT_MIN_MG = 5
+export const MAX_CUPS = 20
+
+export const DOSE_RANGE_MG: [number, number] = [20, 400]
+export const HALF_LIFE_RANGE_H: [number, number] = [1, 12]
+export const BED_RANGE_MINUTES: [number, number] = [10 * 60, 23 * 60]
 
 export const DRINKS: Drink[] = [
   { name: 'TEA', mg: 30, icon: 'tea' },

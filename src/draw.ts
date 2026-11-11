@@ -56,7 +56,7 @@ export const DARK_PALETTE: Palette = {
   ink: [255, 255, 255],
   bright: '#f7f7f7',
   subtle: '#3a3a3a',
-  axis: '#1f1f1f',
+  axis: '#505050',
   bedLine: '#6f6f6f',
   peakLine: '#3b3b3b',
   guideBlue: 'rgb(103,127,179)',
@@ -66,7 +66,7 @@ export const LIGHT_PALETTE: Palette = {
   ink: [17, 17, 17],
   bright: '#111111',
   subtle: '#c4c4c4',
-  axis: '#e2e2e0',
+  axis: '#a0a0a0',
   bedLine: '#8f8f8f',
   peakLine: '#c4c4c4',
   guideBlue: 'rgb(140,165,215)',
@@ -322,7 +322,7 @@ function drawAxis(pen: Pen, palette: Palette) {
   pen.line(CHART_LEFT, BASE_Y + 1, CHART_RIGHT + 2, BASE_Y + 1, palette.axis)
   for (let hour = 0; hour <= 24; hour += 3) {
     const x = crisp(minuteToX(hour * 60))
-    pen.line(x, BASE_Y + 1, x, BASE_Y + 9, palette.subtle)
+    pen.line(x, BASE_Y + 1, x, BASE_Y + 9, palette.axis)
   }
 }
 

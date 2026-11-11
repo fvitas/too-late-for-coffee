@@ -310,7 +310,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
           </span>
         )}
       </div>
-      <div className="pointer-events-none relative h-[1.5em] text-faint">
+      <div className="pointer-events-none relative h-[1.5em] text-axis">
         {AXIS_HOURS.map((hour) => (
           <span
             key={hour}

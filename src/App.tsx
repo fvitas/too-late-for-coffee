@@ -67,7 +67,7 @@ export function App() {
         <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex min-w-0 flex-col gap-1">
             <h1 className="text-[22px] leading-tight text-bright">TOO LATE FOR COFFEE?</h1>
-            <p className="flex flex-wrap gap-x-[1ch] text-base text-muted sm:text-xl">
+            <p className="flex flex-wrap gap-x-[1ch] text-base text-dim sm:text-xl">
               {summary.map((part, index) => (
                 <span key={part} className="whitespace-nowrap">
                   {part}

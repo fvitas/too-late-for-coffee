@@ -6,8 +6,10 @@
   --color-bright: light-dark(#111111, #f7f7f7);
   --color-body: light-dark(#333333, #dcdcdc);
   --color-soft: light-dark(#555555, #bdbdbd);
+  --color-dim: light-dark(#707070, #808080);
   --color-muted: light-dark(#707070, #757575);
   --color-faint: light-dark(#c4c4c4, #3a3a3a);
+  --color-axis: light-dark(#a0a0a0, #505050);
   --color-line: light-dark(#e2e2e0, #1f1f1f);
   --color-accent: #3b82f6;
   --color-shade: light-dark(rgb(0 0 0 / 0.08), #000000);

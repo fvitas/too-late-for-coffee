@@ -14,7 +14,7 @@ export function Popover({ label, closeLabel, onClick, children }: PopoverProps) 
       <button
         type="button"
         aria-expanded={onClick ? undefined : open}
-        className={`cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright sm:text-xl ${open ? 'relative z-20' : ''}`}
+        className={`cursor-pointer py-2 text-base text-dim transition-colors hover:text-bright focus-visible:text-bright sm:text-xl ${open ? 'relative z-20' : ''}`}
         onClick={onClick ?? (() => setOpen(!open))}
       >
         {label}

@@ -66,7 +66,7 @@ export function DrinkMenu({ cup, onPick, onCustom }: DrinkMenuProps) {
           maxLength={3}
           placeholder={`${CUSTOM_RANGE_MG[0]}-${CUSTOM_RANGE_MG[1]}`}
           defaultValue={custom ? String(cup.mg) : undefined}
-          className="w-[6ch] rounded-md border border-line bg-transparent px-1 text-right text-bright placeholder:text-faint"
+          className="w-[7ch] rounded-md border border-line bg-transparent px-1 text-right text-bright placeholder:text-faint"
           onInput={handleInput}
         />
       </form>

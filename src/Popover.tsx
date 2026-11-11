@@ -1,20 +1,21 @@
 import { useState } from 'preact/hooks'
 import { Backdrop } from './Backdrop'
 
-type PopoverProps = { label: string; closeLabel: string; children: (close: () => void) => React.ReactNode }
+type PopoverProps = { label: string; closeLabel: string; onClick?: () => void; children: (close: () => void) => React.ReactNode }
 
 // Only the open button sits above the backdrop, so a click on another button just closes this popover.
 // The panel aligns to the nearest positioned parent: full width on small screens, the shared right edge from sm up.
-export function Popover({ label, closeLabel, children }: PopoverProps) {
+// An onClick replaces the panel, so the button runs it and the panel never opens.
+export function Popover({ label, closeLabel, onClick, children }: PopoverProps) {
   const [open, setOpen] = useState(false)
 
   return (
     <div className="shrink-0 text-sm sm:text-base">
       <button
         type="button"
-        aria-expanded={open}
+        aria-expanded={onClick ? undefined : open}
         className={`cursor-pointer py-2 text-base text-muted transition-colors hover:text-bright focus-visible:text-bright sm:text-xl ${open ? 'relative z-20' : ''}`}
-        onClick={() => setOpen(!open)}
+        onClick={onClick ?? (() => setOpen(!open))}
       >
         {label}
       </button>

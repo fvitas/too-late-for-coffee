@@ -6,11 +6,23 @@ import { toShareQuery } from './share'
 type SharePanelProps = { cups: Cup[]; settings: Settings }
 
 const COPIED_MS = 2_000
+// Phones and tablets get the system share sheet, and desktop keeps the link to copy.
+const NATIVE_SHARE = typeof navigator.share === 'function' && window.matchMedia('(pointer: coarse)').matches
 
 export function SharePanel({ cups, settings }: SharePanelProps) {
+  const url = `${window.location.origin}${window.location.pathname}${toShareQuery(cups, settings)}`
+
+  async function share() {
+    try {
+      await navigator.share({ title: document.title, url })
+    } catch {
+      // The user closed the share sheet.
+    }
+  }
+
   return (
-    <Popover label="SHARE" closeLabel="Close share">
-      {(close) => <ShareLink url={`${window.location.origin}${window.location.pathname}${toShareQuery(cups, settings)}`} onCopied={close} />}
+    <Popover label="SHARE" closeLabel="Close share" onClick={NATIVE_SHARE ? share : undefined}>
+      {(close) => <ShareLink url={url} onCopied={close} />}
     </Popover>
   )
 }

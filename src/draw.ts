@@ -236,7 +236,7 @@ export function drawChart(ctx: CanvasRenderingContext2D, state: ChartState) {
   const peak = findPeak(cups, state.settings)
   const domain = state.domain
   const pen = createPen(ctx, state.stretch)
-  drawColumns(pen, cups, state, peak, domain)
+  drawColumns(pen, cups, state, domain)
   const palette = state.palette
   drawLimit(pen, state.settings, domain, palette)
   drawAxis(pen, palette)
@@ -294,8 +294,7 @@ function columnCells(cups: Cup[], x: number, state: ChartState, domain: number, 
   return cells
 }
 
-function drawColumns(pen: Pen, cups: Cup[], state: ChartState, peak: Peak, domain: number) {
-  const gridStartX = peak.mg > 0 ? minuteToX(peak.minute) - 12 : CHART_RIGHT
+function drawColumns(pen: Pen, cups: Cup[], state: ChartState, domain: number) {
   const bedX = minuteToX(state.settings.bedMinute)
   const peaks = new Map(cups.map((cup) => [cup.id, localPeakAfter(cups, cup, state.settings)]))
   for (let column = 0; column < COLUMNS; column++) {
@@ -304,7 +303,7 @@ function drawColumns(pen: Pen, cups: Cup[], state: ChartState, peak: Peak, domai
     for (const cell of cells) {
       pen.dot(x, rowY(cell.row), cell.radius, `rgba(${cell.rgb},${cell.alpha})`)
     }
-    if (x < gridStartX || Math.abs(x - bedX) < 6) continue
+    if (Math.abs(x - bedX) < 6) continue
     const firstEmpty = cells.length === 0 ? 0 : cells[cells.length - 1].row + 1
     for (let row = firstEmpty; row < ROWS; row++) {
       if ((column + row) % 2 === 0) continue

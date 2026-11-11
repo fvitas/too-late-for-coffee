@@ -97,9 +97,10 @@ export function minuteToX(minute: number): number {
   return CHART_LEFT + (minute / DAY_MINUTES) * (CHART_RIGHT - CHART_LEFT)
 }
 
+// The last minute is one before the next 06:00, which a link would read back as the start of the day.
 export function xToMinute(x: number): number {
   const minute = Math.round(((x - CHART_LEFT) / (CHART_RIGHT - CHART_LEFT)) * DAY_MINUTES)
-  return Math.min(DAY_MINUTES, Math.max(0, minute))
+  return Math.min(DAY_MINUTES - 1, Math.max(0, minute))
 }
 
 export function mgToY(mg: number, domain: number): number {

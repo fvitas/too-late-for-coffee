@@ -10,10 +10,8 @@ import {
   HALF_LIFE_RANGE_H,
   LIMIT_MIN_MG,
   MAX_CUPS,
-  findPeak,
   formatClock,
 } from './caffeine'
-import { chartDomain, chartTopMg } from './draw'
 
 export type Shared = { cups: Cup[] | null; settings: Settings }
 
@@ -38,16 +36,14 @@ export function toShareQuery(cups: Cup[], settings: Settings): string {
 export function parseShareQuery(search: string): Shared {
   if (search.length > MAX_QUERY_LENGTH) return { cups: null, settings: DEFAULT_SETTINGS }
   const params = new URLSearchParams(search)
-  const base = {
+  const settings = {
     doseMg: parseNumber(params.get('dose'), DOSE_RANGE_MG) ?? DEFAULT_SETTINGS.doseMg,
     halfLifeH: parseNumber(params.get('hl'), HALF_LIFE_RANGE_H) ?? DEFAULT_SETTINGS.halfLifeH,
     bedMinute: parseBed(params.get('bed')) ?? DEFAULT_SETTINGS.bedMinute,
-    limitMg: DEFAULT_SETTINGS.limitMg,
+    // The chart grows to fit the limit, so a limit above the peak of the shared cups is still valid.
+    limitMg: parseNumber(params.get('limit'), [LIMIT_MIN_MG, Infinity]) ?? DEFAULT_SETTINGS.limitMg,
   }
-  const cups = parseCups(params.get('cups'))
-  const topMg = chartTopMg(chartDomain(findPeak(cups ?? [], base).mg, LIMIT_MIN_MG))
-  const limitMg = parseNumber(params.get('limit'), [LIMIT_MIN_MG, topMg]) ?? DEFAULT_SETTINGS.limitMg
-  return { cups, settings: { ...base, limitMg } }
+  return { cups: parseCups(params.get('cups')), settings }
 }
 
 function parseCups(value: string | null): Cup[] | null {

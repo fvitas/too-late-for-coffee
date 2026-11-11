@@ -58,6 +58,7 @@ const BED_STEP_MINUTES = 15
 const RESCALE_MS = 300
 
 export function CaffeineChart({ cups, settings, selectedId, light, setCups, setSettings, setSelectedId }: CaffeineChartProps) {
+  const figureRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const draggingId = useRef<number | null>(null)
@@ -137,8 +138,10 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key !== 'Backspace' && event.key !== 'Delete') return
-      // Backspace in a text field edits the text, so it must not remove the cup.
-      if (event.target instanceof HTMLInputElement) return
+      if (event.repeat || event.metaKey || event.ctrlKey || event.altKey || menuCupId !== null || cupLimitOpen) return
+      // A key in the settings, share or theme controls must not remove the cup.
+      const onChart = event.target instanceof Node && figureRef.current?.contains(event.target)
+      if (event.target !== document.body && !onChart) return
       const selected = cups.find((cup) => cup.id === selectedId)
       if (!selected) return
       event.preventDefault()
@@ -146,7 +149,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [cups, selectedId])
+  }, [cups, selectedId, menuCupId, cupLimitOpen])
 
   function toPoint(event: React.MouseEvent<HTMLElement>): Point {
     const rect = canvasRef.current?.getBoundingClientRect() ?? new DOMRect()
@@ -264,6 +267,7 @@ export function CaffeineChart({ cups, settings, selectedId, light, setCups, setS
 
   return (
     <figure
+      ref={figureRef}
       className={`relative w-full leading-tight ${compact ? 'text-[13px]' : 'text-base'} ${showPeak && peakRaised ? 'pt-[5.25em]' : 'pt-[2.75em]'}`}
     >
       <div ref={boxRef} className="relative aspect-[868/739] w-full sm:aspect-[868/462]">

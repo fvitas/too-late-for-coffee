@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import { type Cup, type Settings, DEFAULT_SETTINGS, findPeak } from './caffeine'
 import { CaffeineChart } from './CaffeineChart'
 import { chartDomain, chartTopMg } from './draw'
@@ -15,9 +15,10 @@ const INITIAL_CUPS: Cup[] = [
 ]
 
 const SHARED = parseShareQuery(window.location.search)
+const START_CUPS = SHARED.cups ?? INITIAL_CUPS
 
 export function App() {
-  const [cups, setCups] = useState<Cup[]>(SHARED.cups ?? INITIAL_CUPS)
+  const [cups, setCups] = useState<Cup[]>(START_CUPS)
   const [settings, setSettings] = useState<Settings>(SHARED.settings)
   const [selectedId, setSelectedId] = useState<number | null>(cups[cups.length - 1].id)
   const prefersLight = usePrefersLight()
@@ -25,6 +26,12 @@ export function App() {
   const [chosenLight, setChosenLight] = useState<boolean | null>(null)
   const light = chosenLight ?? prefersLight
   const limitMaxMg = chartTopMg(chartDomain(findPeak(cups, settings).mg, settings.limitMg))
+  // The first edit drops the shared query, so the address bar no longer shows a day that is not on screen.
+  useEffect(() => {
+    if (cups === START_CUPS && settings === SHARED.settings) return
+    if (window.location.search) history.replaceState(null, '', window.location.pathname)
+  }, [cups, settings])
+
   const summary = [
     `${cups.length} ${cups.length === 1 ? 'CUP' : 'CUPS'}`,
     `CAFFEINE ${cups.reduce((sum, cup) => sum + cup.mg, 0)} MG`,
